@@ -1,4 +1,4 @@
-twitter-notify
+tweet-gnome-notify
 ==============
 
-Puts the most recent tweet in a Linux Notification when run
+Puts the most recent tweet in a Gnome Notification when run
