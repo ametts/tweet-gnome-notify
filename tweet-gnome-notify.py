@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 
 import twitter
+import threading
 import pynotify
 import os
 import sys
+import time
+import syslog
+
+CHECK_INTERVAL = 60
 
 class EmptyEnvironmentVariable(Exception):
 	pass
@@ -13,9 +18,10 @@ def raise_if_empty(variable_name, variable):
 		raise EmptyEnvironmentVariable('{0} environment variable cannot be empty\n'.format(
 				variable_name))
 
-def main():
+def notify_recent_tweet():
 
 	if not pynotify.init('tweet-gnome-notify'):
+		syslog.syslog("Couldn't initialize notify -- exiting\n")
 		sys.exit(1)
 
 	rc_path = os.path.join(os.getenv('HOME'),'.tweet-gnome-notify')
@@ -55,4 +61,13 @@ def main():
 			f.close()
 
 if __name__ == '__main__':
-	main()
+	syslog.syslog("Starting tweet-gnome-notify\n")
+	while True:
+		try:
+			notify_recent_tweet()
+		except Exception:
+			syslog.syslog("Uncaught exception\n")
+			syslog.syslog("{0}\n".format(Exception))
+		time.sleep(CHECK_INTERVAL)
+
+
